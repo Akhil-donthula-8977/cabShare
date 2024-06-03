@@ -8,9 +8,9 @@ export const Toast = () => {
       }
     };
     return (
-      <div ref={res} className='w-full h-[10px] text-center bg-gray-300'>
+      <div ref={res} className='w-full h-[50px] flex flex-row items-center justify-center text-center bg-green-600 text-white'>
         hello
-        <Button onClick={handleRemove}>remove</Button>
+        <Button className="h-[25px] text-center ml-2" onClick={handleRemove}>remove</Button>
       </div>
     );
   };

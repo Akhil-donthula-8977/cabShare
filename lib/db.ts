@@ -13,6 +13,7 @@ export const connectDatabase = async () => {
     })
     cached.conn=await cached.promise
     console.log("done")
+    console.log(MONGODB_URI)
     return cached.conn
 
 }

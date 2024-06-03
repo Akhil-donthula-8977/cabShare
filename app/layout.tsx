@@ -1,9 +1,12 @@
+
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import SheetCustom from "@/components/Custom/SheetCustom";
 import SideMenuBar from "@/components/Custom/SideMenuBar";
 import { Suspense } from 'react'
+import AuthProvider from "@/components/providers/AuthProvider";
+
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
@@ -18,20 +21,21 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={inter.className}>
-        <div className="flex gap-2 w-full mt-[0.5px]">
-          <div className="min-w-[100px] hidden sm:block sm:w-[200px]  bg-green-300 ">
-            <SideMenuBar></SideMenuBar>
-          </div>
-          <main className=" flex-1" id="mainTag">
-            <Suspense fallback={<p>Loading feed...</p>}>
-              {children}
-            </Suspense>
-          </main>
+      <AuthProvider >
 
-
-        </div>
-      </body>
+          <body className={inter.className}>
+            <div className="flex gap-2 w-full mt-[0.5px] ">
+              <div className=" hidden sm:block  ">
+                <SideMenuBar></SideMenuBar>
+              </div>
+              <main className="flex-1" id="mainTag">
+                <Suspense fallback={<p>Loading feed...</p>}>
+                  {children}
+                </Suspense>
+              </main>
+            </div>
+          </body>
+      </AuthProvider>
     </html>
   );
 }

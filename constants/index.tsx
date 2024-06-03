@@ -2,11 +2,12 @@ import React from 'react';
 import { MdOutlineLocalTaxi } from 'react-icons/md';
 import { IoChatboxOutline } from "react-icons/io5";
 
-interface MyObject {
+export interface MyObject {
   href: string;
   icon?: React.ReactNode; // Use React.ReactNode for JSX elements
   key: string;
   text: string;
+  color:string|"black";
 }
 
 export const NavLinks: MyObject[] = [
@@ -15,11 +16,13 @@ export const NavLinks: MyObject[] = [
     key: 'share A cab',
     text: 'share a cab',
     icon: <MdOutlineLocalTaxi className='text-2xl sm:text-3xl' />,
+    color:"red"
   },
   {
-    href: '/',
+    href: '/chat',
     key: 'chat',
     text: 'chat',
-    icon:<IoChatboxOutline />
+    icon:<IoChatboxOutline />,
+    color:"blue"
   },
 ];

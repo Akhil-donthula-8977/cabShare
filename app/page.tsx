@@ -2,26 +2,60 @@
 import { FaLocationArrow } from "react-icons/fa6";
 import { raleway } from "@/lib/fonts"
 import { useCallback, useEffect, useState, memo, useMemo, useRef } from 'react';
-import { useJsApiLoader, GoogleMap, Marker, Autocomplete, DirectionsRenderer, } from '@react-google-maps/api';
 import { getLocation } from "@/utils/locationUtils";
-import { fetchDirections } from "@/utils/locationUtils";
 import { Button } from "@/components/ui/button";
+import useDebounce from "./(hooks)/useDebounce";
+import { place, Coordinates } from "@/lib/types";
+import LocationSearchBox from "@/components/Custom/LocationSearchBox";
+import { findNearbyLocations } from "@/actions/shareRequest.action";
+import CabShareRequestBox from "@/components/Custom/CabShareRequestBox";
+import SkeletonLoad from "@/utils/loaders";
+import { FormData } from "@/lib/types";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
+
+interface ListOfRequestsProps {
+  data: FormData[] | null;
+}
+
+const ListOfRequests: React.FC<ListOfRequestsProps> = ({ data }) => {
+  return (
+    <div>
+      {data?.map((e, index) => (
+        <CabShareRequestBox key={index} data={e} />
+      ))}
+    </div>
+  );
+};
 
 function Home() {
-  const [center, setCenter] = useState<google.maps.LatLng | google.maps.LatLngLiteral | undefined>(undefined);
-  const [map, setMap] = useState<google.maps.Map | null>(null);
-  const [directionsResponse, setDirectionsResponse] = useState<google.maps.DirectionsResult | null>(null)
-  const [distance, setDistance] = useState<string | undefined>(''); // Initialize as undefined
-  const [duration, setDuration] = useState<string | undefined>('');
-  const originRef = useRef<HTMLInputElement>(null);
-  const destinationRef = useRef<HTMLInputElement>(null);
-  const { isLoaded } = useJsApiLoader({
-    googleMapsApiKey: process.env.NEXT_PUBLIC_MAPS_API || '',
-    libraries: ["places", "geocoding"]
-  });
-  const calculateDistance = useCallback(async () =>
-    await fetchDirections(originRef, destinationRef, setDistance, setDuration, setDirectionsResponse)
-    , [originRef.current?.value, destinationRef.current?.value]);
+  const { data: session, status } = useSession()
+  const router=useRouter()
+  const [center, setCenter] = useState({ lat: 0, lng: 0 });
+  const [selectPosition, setSelectPosition] = useState<{ lat: number; lon: number } | null>(null);
+  const [formLocationsData, setFormLocationsData] = useState({ fromLocation: "", toLocation: "", fromCoords: { type: "point", coordinates: [0, 0] }, toCoords: { type: "point", coordinates: [0, 0] } });
+  const [inputValue, setInputValue] = useState('in');
+  const debouncedInputValue = useDebounce(inputValue, 300);
+  const [listPlace, setListPlace] = useState<place[] | null>([]);
+  const [LoadingStatus, setLoadingStatus] = useState<string>("Search something")
+  const handleSearch = async () => {
+    if (formLocationsData.fromLocation == "" || formLocationsData.toLocation == "") {
+      setLoadingStatus("Search something");
+      return;
+    }
+    setLoadingStatus("loading")
+    //@ts-ignore
+    const res = await findNearbyLocations({ fromCoords: formLocationsData.fromCoords, toCoords: formLocationsData.toCoords })
+    console.log(res)
+    if (res.length == 0) {
+      setLoadingStatus("NotFound")
+      return;
+    }
+  
+    setListPlace(res);
+    setLoadingStatus("");
+  };
+
   useEffect(() => {
     getLocation((position: GeolocationPosition) => {
       setCenter({
@@ -30,52 +64,31 @@ function Home() {
       });
     });
   }, []);
-
-
-  if (!isLoaded) {
-    return
-    <main className={`mt-2 ${raleway.className} font-semibold`}>
-      <p>Loading...</p>
-    </main>
-  }
-
+  if (status === "unauthenticated"){
+    router.replace("/auth/signin")
+  } 
   return (
-    <main className={`mt-2 ${raleway.className}`}>
-      <div className="flex flex-col sm:flex-row justify-evenly sm:items-center  ">
-        <Autocomplete>
-          <input className="w-full ml-2 sm:ml-0 sm:w-[400px] m-1 rounded-[16px] sm:h-[35px] pl-[9px] border-[3px]" type="text" name="fromLocation" ref={originRef}></input>
-        </Autocomplete>
-        <Autocomplete>
-          <input className="w-full ml-2 sm:ml-0  sm:w-[400px] m-1 rounded-[16px] sm:h-[35px] pl-[9px] border-[3px]" type="text" name="toLocation" ref={destinationRef}></input>
-        </Autocomplete>
-        <Button className=" ml-2 sm:ml-0  h-[26px] text-[12px]" onClick={() => {
-        }}>Search</Button>
-      </div >
-      <div className="w-[100px] h-[100px]">
+    <main className={`mt-2 ${raleway.className}  flex flex-col items-center`}>
 
-        <div className="border w-fit p-1 rounded-[50px] text-center hover:bg-slate-300 hover:text-slate-800 " onClick={() => {
-          map?.panTo(center ? center : { lat: 0, lng: 0 })
-        }}>
-          <FaLocationArrow className="w-5 h-5 text-slate-500  m-1 " />
+      <div className="flex flex-col sm:flex-row justify-evenly sm:items-center  ">
+        <div className="flex flex-start flex-col items-start ">
+          <label className="text-[13px]"> from:</label>
+          <LocationSearchBox value={formLocationsData.fromLocation} formLocationsData={formLocationsData} name={"fromLocation"} coords={"fromCoords"} setResult={setFormLocationsData} ></LocationSearchBox>
         </div>
-        <Button className="h-[26px] text-[12px]" onClick={calculateDistance}>calculate Distance</Button>
-        <GoogleMap center={center} zoom={15} mapContainerClassName="w-[400px] h-[400px]"
-          onLoad={map => setMap(map)}
-          options={{
-            zoomControl: false,
-            mapTypeControl: false,
-            scaleControl: false,
-            streetViewControl: false,
-            rotateControl: false,
-            fullscreenControl: false
-          }} >
-          {directionsResponse && (
-            <DirectionsRenderer directions={directionsResponse} />
-          )}
-          <Marker position={center ? center : { lat: 0, lng: 0 }}></Marker>
-        </GoogleMap>
-        {distance}
-        {duration}
+        <div className="flex flex-start flex-col items-start">
+          <label className="text-[13px]"> To :</label>
+          <LocationSearchBox value={formLocationsData.toLocation} formLocationsData={formLocationsData} name={"toLocation"} coords={"toCoords"} setResult={(setFormLocationsData)}></LocationSearchBox>
+        </div>
+        <Button className=" ml-2 sm:ml-0 sm:mt-4  h-[26px]  text-[12px]" onClick={handleSearch}>Search</Button>
+      </div>
+      <div className="md:w-[80%] smd:w-[60%]  w-full p-1  border-2 h-screen ">
+        {LoadingStatus === "Search something" && <p className="text-center">Search something</p>}
+        {LoadingStatus === "NotFound" && <p className="text-center">Not Found</p>}
+        {LoadingStatus=="loading" && <SkeletonLoad></SkeletonLoad>}
+                                                  
+       {LoadingStatus=="" &&  <ListOfRequests data={listPlace} />}
+
+        
       </div>
     </main >
   );
