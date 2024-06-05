@@ -12,6 +12,8 @@ import {
 } from "@chatscope/chat-ui-kit-react";
 
 import { useContext } from "react";
+import { sendMessage } from "@/actions/Messages.action";
+import WebSocketContext from "@/components/context/WebsocketContext";
 interface ChatMessage extends MessageModel {
   message: string;
   sentTime: string;
@@ -25,14 +27,15 @@ const App: React.FC = () => {
   const [input, setInput] = useState("");
   const [socket, setSocket] = useState<ReturnType<typeof io> | null>(null);
   const selfUserId="1"; // use session()
+  const check=useContext(WebSocketContext)?.instance
   useEffect(() => {
-    const socketInstance = io("http://localhost:3001"); // Ensure this URL matches your server
-    setSocket(socketInstance);
-
+   if(!check)return ;
+   let socketInstance=check
+   setSocket(check)
     socketInstance.on("connect", () => {
       console.log("Connected to server:", socketInstance.id);
     });
-
+  
     socketInstance.on("message", (data: { message: string; sender: string }) => {
      //@ts-ignore
       setMessages((prevMessages) => [
@@ -46,12 +49,9 @@ const App: React.FC = () => {
         },
       ]);
     });
-    return () => {
-      socketInstance.disconnect();
-    };
   }, []);
 
-  const handleSendMessage = () => {
+  const handleSendMessage =async () => {
     if (input.trim() && socket) {
       const messageData: ChatMessage = {
         message: input,
@@ -62,8 +62,10 @@ const App: React.FC = () => {
         position:1,
         receiver:selfUserId
       };
-      socket.emit("message", { message: input, sender: "You" });
-      setMessages((prevMessages) => [...prevMessages, messageData]);
+     // socket.emit('sendMessage', { message: input, sender: "You" });
+   //await sendMessage(input) 
+     check?.emit("sendMessage",{ message: input, sender: "You" });
+     setMessages((prevMessages) => [...prevMessages, messageData]);
       setInput("");
     }
   };

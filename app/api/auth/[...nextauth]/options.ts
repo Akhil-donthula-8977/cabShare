@@ -32,7 +32,6 @@ export const options = {
             return null;
           }
           if (datafind) {
-            console.log("found user", datafind);
             //@ts-ignore
             delete datafind?.password;
             return datafind;
@@ -51,7 +50,7 @@ export const options = {
       if (user) {
         token._id = user._id;
       }
-      console.log("token",token);
+      
       return token;
     },
     //@ts-ignore
@@ -59,7 +58,7 @@ export const options = {
       if (session?.user) {
         session.user._id = token._id;
       }
-      console.log("session",session)
+    
       return session;
     },
   },

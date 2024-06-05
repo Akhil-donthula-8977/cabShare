@@ -1,7 +1,8 @@
 "use client"
 import { FaLocationArrow } from "react-icons/fa6";
+import { createRoot } from 'react-dom/client';
 import { raleway } from "@/lib/fonts"
-import { useCallback, useEffect, useState, memo, useMemo, useRef } from 'react';
+import { useCallback, useEffect, useState, memo, useMemo, useRef, useContext } from 'react';
 import { getLocation } from "@/utils/locationUtils";
 import { Button } from "@/components/ui/button";
 import useDebounce from "./(hooks)/useDebounce";
@@ -13,7 +14,11 @@ import SkeletonLoad from "@/utils/loaders";
 import { FormData } from "@/lib/types";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-
+import WebSocketContext from "@/components/context/WebsocketContext";
+import { unstable_noStore } from "next/cache";
+import { userSetSocketID } from "@/actions/user.actions";
+import { Toast } from "@/components/ui/toast";
+import { useToast } from "@/components/ui/use-toast";
 interface ListOfRequestsProps {
   data: FormData[] | null;
 }
@@ -28,9 +33,11 @@ const ListOfRequests: React.FC<ListOfRequestsProps> = ({ data }) => {
   );
 };
 
+
 function Home() {
+  //  unstable_noStore()
   const { data: session, status } = useSession()
-  const router=useRouter()
+  const router = useRouter()
   const [center, setCenter] = useState({ lat: 0, lng: 0 });
   const [selectPosition, setSelectPosition] = useState<{ lat: number; lon: number } | null>(null);
   const [formLocationsData, setFormLocationsData] = useState({ fromLocation: "", toLocation: "", fromCoords: { type: "point", coordinates: [0, 0] }, toCoords: { type: "point", coordinates: [0, 0] } });
@@ -38,6 +45,10 @@ function Home() {
   const debouncedInputValue = useDebounce(inputValue, 300);
   const [listPlace, setListPlace] = useState<place[] | null>([]);
   const [LoadingStatus, setLoadingStatus] = useState<string>("Search something")
+  const socketInstance = useContext(WebSocketContext)
+  const { toast } = useToast()
+
+
   const handleSearch = async () => {
     if (formLocationsData.fromLocation == "" || formLocationsData.toLocation == "") {
       setLoadingStatus("Search something");
@@ -51,10 +62,30 @@ function Home() {
       setLoadingStatus("NotFound")
       return;
     }
-  
     setListPlace(res);
     setLoadingStatus("");
   };
+  if (status === "unauthenticated") {
+    router.replace("/auth/signin")
+  }
+  useEffect(() => {
+    async function fun() {
+      const hasEffectRunBefore = localStorage.getItem("socketID");
+      if (hasEffectRunBefore !== socketInstance?.id && session?.user?._id) {
+        console.log("Socket ID changed:", socketInstance?.id);
+        // Perform your logic here
+        console.log(session?.user?._id)
+        if (socketInstance?.id && session?.user?._id) {
+          console.log("changing")
+          await userSetSocketID(socketInstance?.id, session?.user?._id);
+        }
+        localStorage.setItem("socketID", socketInstance?.id);
+      }
+    }
+
+    fun();
+  }, [socketInstance?.id, session?.user?._id]);
+
 
   useEffect(() => {
     getLocation((position: GeolocationPosition) => {
@@ -64,9 +95,28 @@ function Home() {
       });
     });
   }, []);
-  if (status === "unauthenticated"){
-    router.replace("/auth/signin")
-  } 
+  useEffect(() => {
+    socketInstance?.instance?.on("requestAccepted", (data) => {
+      console.log(data)
+      toast({
+        title: "Scheduled: Catch up",
+        description: "Friday, February 10, 2023 at 5:57 PM",
+      })
+    })
+  }, [])
+
+  useEffect(() => {
+    let socket = socketInstance?.instance;
+    if (!socket) return;
+    socket.on('requestNotification', (data) => {
+      console.log('Received request notification:', data);
+      toast({
+        title: "Scheduled: Catch up",
+        description: "Friday, February 10, 2023 at 5:57 PM",
+      })
+    });
+  }, []);
+
   return (
     <main className={`mt-2 ${raleway.className}  flex flex-col items-center`}>
 
@@ -84,11 +134,8 @@ function Home() {
       <div className="md:w-[80%] smd:w-[60%]  w-full p-1  border-2 h-screen ">
         {LoadingStatus === "Search something" && <p className="text-center">Search something</p>}
         {LoadingStatus === "NotFound" && <p className="text-center">Not Found</p>}
-        {LoadingStatus=="loading" && <SkeletonLoad></SkeletonLoad>}
-                                                  
-       {LoadingStatus=="" &&  <ListOfRequests data={listPlace} />}
-
-        
+        {LoadingStatus == "loading" && <SkeletonLoad></SkeletonLoad>}
+        {LoadingStatus == "" && <ListOfRequests data={listPlace} socket={socketInstance} />}
       </div>
     </main >
   );

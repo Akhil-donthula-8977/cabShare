@@ -47,9 +47,9 @@ const handleSubmit = async (e: FormEvent) => {
     // Handle error gracefully, such as displaying an error message to the user
   }
 };
- if (status === "unauthenticated"){
-    router.replace("/auth/signin")
-  } 
+//  if (status === "unauthenticated"){
+//     router.replace("/auth/signin")
+//   } 
   if(status=="authenticated"){
     router.replace("/")
   }
@@ -62,7 +62,7 @@ const handleSubmit = async (e: FormEvent) => {
         </div>
 
         <div className="w-full sm:max-w-md mt-6 px-6 py-4 bg-white shadow-md overflow-hidden sm:rounded-lg">
-          <form onSubmit={handleSubmit}> {/* Add onSubmit handler to the form */}
+          <form onSubmit={handleSubmit}  method="post"> {/* Add onSubmit handler to the form */}
             <div className="py-8">
               <center>
                 <span className="text-2xl font-semibold">Log In</span>

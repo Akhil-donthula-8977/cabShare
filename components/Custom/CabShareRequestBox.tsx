@@ -1,13 +1,53 @@
 "use client";
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import { FaMale } from "react-icons/fa";
 import { FaPeopleGroup } from "react-icons/fa6";
 import { FaFemale } from "react-icons/fa";
 import { FormData } from '@/lib/types';
-import { Button } from '@chatscope/chat-ui-kit-react';
+import { Button } from '../ui/button';
+import { sendShareRequest } from '@/actions/user.actions';
+import { useSession } from 'next-auth/react';
+import { useEffect } from 'react';
+import WebSocketContext from '../context/WebsocketContext';
+import { useToast } from '../ui/use-toast';
 const CabShareRequestBox = ({ data }: { data: FormData }) => {
-    const handleRequest = () => {
+    const [Loading,setLoadingStatus]=useState(false);
+    const check=useContext(WebSocketContext)?.instance
+    const check2=useContext(WebSocketContext)?.socketID
+    const { data: session, status } = useSession()
+     const toast=useToast()
+    //@ts-ignore
+    const userOwner=data.userOwner
+    useEffect(() => {
+        let socket = check;
+        if (!socket) return;
+    
+        socket.on('requestNotification', (data) => {
+            console.log('Received request notification:', data);
+            console.log(check2)
+            if (data.id == check2) {
+                if (typeof toast === 'function') {
+                    toast({
+                        title: "Scheduled: Catch up",
+                        description: "Friday, February 10, 2023 at 5:57 PM",
+                    });
+                }
+            }
+        });
+        return () => {
+            socket.off('requestNotification');
+        };
+    }, []);
+    
+    const handleRequest = async () => {
+        let socketInstance=check;
+                     // @ts-ignore
+         const res=await sendShareRequest(data.userOwner,data._id,session?.user?._id);
+        //  console.log(res)
+        // const res={ _id: '665f05289056cb13e2b0eac2', socketID: 'T7QFNM6yWSjdIEiyAAAV' }
 
+         
+           check?.emit('notify',res)
     }
     return (
         <div className='w-full border border-slate-300 p-4 rounded-md bg-gray-50 shadow-md'>
@@ -47,9 +87,12 @@ const CabShareRequestBox = ({ data }: { data: FormData }) => {
                     <div>
                         <span className='font-bold text-gray-800'>Split per person:</span>
                         <span className='ml-1 text-gray-600 text-sm'>{data.splitMoney} rs</span>
-                        <Button onClick={handleRequest}>send Request</Button>
+                       
                     </div>
                 )}
+            <Button className='bg-pink-200' onClick={()=>{  check?.emit("test")}} >check</Button>
+                 <Button onClick={handleRequest} className='bg-blue-200'>send Request</Button>
+
             </div>
         </div>
     );

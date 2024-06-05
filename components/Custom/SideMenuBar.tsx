@@ -1,5 +1,5 @@
 "use client"
-import React from 'react';
+import React, { useContext, useEffect } from 'react';
 import { NavLinks } from '@/constants';
 import { raleway } from '@/lib/fonts';
 import Link from 'next/link';
@@ -8,10 +8,21 @@ import { usePathname } from 'next/navigation';
 import image from '@/public/th.jpeg';
 import { Button } from '../ui/button';
 import { signOut } from 'next-auth/react';
-
+import WebSocketContext from '../context/WebsocketContext';
+import { useToast } from "@/components/ui/use-toast"
+import { createRoot } from 'react-dom/client';
+import { Toast } from './Toast';
 const SideMenuBar = () => {
+  const socketInstance=useContext(WebSocketContext)
   const pathname = usePathname();
-  console.log(pathname)
+  const { toast } = useToast()
+  const handleClick = () => {
+    const toastContainer = document.createElement('div'); // Create a container div for the toast
+    document.body.prepend(toastContainer);
+    const root = createRoot(toastContainer);
+    root.render(<Toast />);
+  };
+
   return (
     <>
       {((pathname !== '/auth/signup') && (pathname !== '/auth/signin')) && (

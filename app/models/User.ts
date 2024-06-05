@@ -1,16 +1,24 @@
-import mongoose, { Schema, Document } from 'mongoose';
+import mongoose, { Schema, Document, Types } from 'mongoose';
 
-// Define interface for User document
+// Define interface for RequestsReceived sub-document
+interface RequestsReceived {
+  userRequested: mongoose.Schema.Types.ObjectId;
+  requestId: mongoose.Types.ObjectId;
+  status: 'accepted' | 'rejected' | 'pending';
+}
+
 export interface User extends Document {
   userName: string;
   email: string;
   phoneNumber: string;
   gender: 'male' | 'female' | 'other';
   connectedUsers: mongoose.Types.ObjectId[];
-  joinedRooms: mongoose.Types.ObjectId[];
+  requestsReceived: RequestsReceived[];
   socketID: string;
   password: string;
   premiumUser: boolean;
+  requestSent:mongoose.Types.ObjectId[],
+  activeRequests: mongoose.Schema.Types.ObjectId[]
 }
 
 // Define schema for User document
@@ -44,10 +52,20 @@ const UserSchema: Schema<User> = new Schema<User>({
     required: true,
   },
   connectedUsers: [{ type: Schema.Types.ObjectId, ref: 'User' }],
-  joinedRooms: [{ type: Schema.Types.ObjectId, ref: 'Room' }],
+  requestsReceived: [{
+    userRequested: { type: Schema.Types.ObjectId, required: true,ref:"User" },
+    requestId: { type: Schema.Types.ObjectId, required: true ,ref:"ShareTransportRequest"},
+    status: {
+      type: String,
+      enum: ['accepted', 'rejected', 'pending'],
+      default: 'pending',
+    },
+  }],
+  activeRequests:[{ type: Schema.Types.ObjectId, ref: 'ShareTransportRequest' }],
+  requestSent:[{ type: Schema.Types.ObjectId, ref: 'ShareTransportRequest' }],
   socketID: {
     type: String,
-    default:""
+    default: "",
   },
   password: {
     type: String,
@@ -62,5 +80,5 @@ const UserSchema: Schema<User> = new Schema<User>({
 });
 
 // Create and export the User model
-const UserModel =mongoose.models.User || mongoose.model<User>('User', UserSchema,'User');
+const UserModel = mongoose.models.User || mongoose.model<User>('User', UserSchema, 'User');
 export default UserModel;

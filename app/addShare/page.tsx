@@ -29,8 +29,8 @@ const Page = () => {
     startLocation: "",
     endLocation: "",
     date: new Date().toISOString().slice(0, 10),
-    startLocationCoords: {type:"point",coordinates:[0,0]},
-    endLocationCoords:{type:"point",coordinates:[0,0]},
+    startLocationCoords: { type: "point", coordinates: [0, 0] },
+    endLocationCoords: { type: "point", coordinates: [0, 0] },
   });
   const [selected, setSelected] = useState<Date>();
   const [validationErrors, setValidationErrors] = useState<ValidationError[]>([]);
@@ -73,21 +73,20 @@ const Page = () => {
 
   const handleSubmit = useCallback(async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const finData={
+    const finData = {
       ...formData,
-      userOwner:session?.user?._id
-      
+      userOwner: session?.user?._id
     }
     const data = await getShareRequest(finData);
     //@ts-ignore
-    if(data?.length>0){
+    if (data?.length > 0) {
       setValidationErrors(data);
-      return ;
+      return;
     }
-     handleClick();
+    handleClick();
     console.log(data)
 
-  }, [{...formData}])
+  }, [{ ...formData }])
 
   return (
     <div className={`${raleway.className}`}>
