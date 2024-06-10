@@ -134,9 +134,6 @@ const handleSubmit = async (e: FormEvent) => {
               >
                 Sign In
               </button>
-              <button onClick={()=>{
-                signOut();
-              }}>signout</button>
             </div>
             <h3 className='text-center'>Want to <span><Link href="/auth/signup" className='text-blue-900 underline-offset-2'>Sign up?</Link></span></h3>
           </form>
