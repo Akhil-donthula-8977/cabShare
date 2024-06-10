@@ -13,19 +13,10 @@ import { useToast } from '../ui/use-toast';
 const CabShareRequestBox = ({ data }: { data: FormData }) => {
     const [Loading,setLoadingStatus]=useState(false);
     const check=useContext(WebSocketContext)?.instance
-    const check2=useContext(WebSocketContext)?.socketID
     const { data: session, status } = useSession()
      const toast=useToast()
     //@ts-ignore
     const userOwner=data.userOwner
-    useEffect(() => {
-        let socket = check;
-        if (!socket) return;
-        return () => {
-           
-        };
-    }, []);
-    
     const handleRequest = async () => {
         let socketInstance=check;
          // @ts-ignore

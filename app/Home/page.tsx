@@ -1,5 +1,4 @@
 "use client";
-
 import { useEffect, useState, useCallback, useContext } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
@@ -17,19 +16,17 @@ import { raleway } from "@/lib/fonts";
 const ListOfRequests = ({ data }) => {
   return (
     <div>
-      {data?.map((e, index) => (
+      {data?.map((e, index:number) => (
         <CabShareRequestBox key={index} data={e} />
       ))}
     </div>
   );
 };
-
 const Home = () => {
   const { data: session, status } = useSession();
   const router = useRouter();
   const { toast } = useToast();
   const socketContext = useContext(WebSocketContext);
-
   const [center, setCenter] = useState({ lat: 0, lng: 0 });
   const [formLocationsData, setFormLocationsData] = useState({ fromLocation: "", toLocation: "", fromCoords: { type: "point", coordinates: [0, 0] }, toCoords: { type: "point", coordinates: [0, 0] } });
   const [inputValue, setInputValue] = useState('in');
@@ -69,7 +66,7 @@ const Home = () => {
 
   useEffect(() => {
     const { instance, id } = socketContext;
-    console.log(socketContext)
+    // console.log(socketContext)
     if (instance && id) {
       instance.on("requestAccepted", (data) => {
         toast({ title: "Your cabshare request has been accepted, have a check" });
@@ -80,8 +77,7 @@ const Home = () => {
       });
 
       return () => {
-        // instance.off("requestAccepted");
-        // instance.off("requestNotification");
+     
       };
     }
   }, [socketContext, toast]);

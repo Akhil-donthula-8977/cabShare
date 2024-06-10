@@ -1,10 +1,11 @@
-"use client";
+"use client"
 import React, { useState, useEffect, useContext } from "react";
 import { useSession } from "next-auth/react";
 import { useSearchParams } from "next/navigation";
-import { getuserSocketId } from "@/actions/user.actions";
 import WebSocketContext from "@/components/context/WebsocketContext";
 import { raleway } from "@/lib/fonts";
+import { getAllMessages, sendMessage } from "@/actions/Messages.action";
+import { getuserSocketId } from "@/actions/user.actions";
 const MessageScreen: React.FC = () => {
   const { data: session } = useSession();
   const [messages, setMessages] = useState<any[]>([]);
@@ -14,19 +15,17 @@ const MessageScreen: React.FC = () => {
   const params = useSearchParams();
   const socket = useContext(WebSocketContext)?.instance;
   const [paramsSelect, setParamSelect] = useState<boolean>(true);
+
   useEffect(() => {
     if (!socket) return;
 
-    // socket.on("connect", () => {
-    //   console.log("Connected to server:", socket.id);
-    // });
-
-    socket.on("message", (data: { message: string; sender: string; receiver: string }) => {
+    socket.on("message", (data) => {
+      
       setMessages((prevMessages) => [
         ...prevMessages,
         {
           message: data.message,
-          sentTime: "just now",
+          sentTime: new Date(),
           sender: data.sender,
           direction: data.sender === session?.user?._id ? "outgoing" : "incoming",
           type: "text",
@@ -36,49 +35,65 @@ const MessageScreen: React.FC = () => {
     });
 
     return () => {
-      socket.off("connect");
-      socket.off("message");
+  
     };
   }, [socket, session?.user?._id]);
 
   useEffect(() => {
-    if (params.get("id") != null) {
-      async function fetchOpp() {
+    const fetchData = async () => {
+      if (params.get("id") != null) {
         setParamSelect(false);
         const receiverId = params.get("id");
+        const ownerId = session?.user?._id;
+
+        if (ownerId && receiverId) {
+          try {
+            const getMessages = await getAllMessages(receiverId, ownerId);
+            setMessages(getMessages || []);
+           
+          } catch (error) {
+            console.error( error);
+          }
+        }
+
         const getSock = await getuserSocketId(receiverId);
-        console.log("opp socket", getSock);
         setActiveChat(getSock);
+      } else {
+        setParamSelect(true);
       }
-      fetchOpp();
-    }
-    else {
-      setParamSelect(true);
-    }
-  }, [params]);
+    };
+
+    fetchData();
+  }, [params, session?.user?._id]);
 
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
     if (input.trim() && socket) {
       const messageData = {
         message: input,
-        sentTime: "just now",
+        sentTime: new Date().getDate(),
         sender: session?.user?._id!,
         direction: "outgoing",
         type: "text",
         receiver: activeChat,
       };
-      socket.emit("sendMessage", messageData);
+      await sendMessage({ ...messageData, receiver: params.get("id") });
       setMessages((prevMessages) => [...prevMessages, messageData]);
+      socket.emit("sendMessage", messageData);
       setInput("");
     }
   };
 
+  const sortedMessages = messages.sort((a, b) => new Date(a.sentTime).getTime() - new Date(b.sentTime).getTime());
+
   return (
     <div className="h-screen flex flex-col">
       <div className="flex-grow overflow-y-auto p-4">
-        {messages.map((msg, index) => (
-          <div key={index} className={`flex ${msg.direction === "outgoing" ? "justify-end" : "justify-start"} mb-2`}>
+        {sortedMessages.map((msg, index) => (
+          <div
+            key={index}
+            className={`flex mb-2 ${msg.direction === "outgoing" ? "justify-end" : "justify-start"}`}
+          >
             <div
               className={`p-2 rounded-lg ${raleway.className} ${msg.direction === "outgoing" ? "bg-blue-500 text-white" : "bg-gray-200 text-black"}`}
             >
@@ -86,6 +101,7 @@ const MessageScreen: React.FC = () => {
             </div>
           </div>
         ))}
+
       </div>
       <div className="p-2 border-t border-gray-300">
         <form onSubmit={handleSendMessage} className="flex items-center">
