@@ -30,12 +30,15 @@ export default async function RootLayout({
           <body className={inter.className}>
             <div className="flex gap-2 w-full mt-[0.5px] ">
               <div className=" hidden sm:block  ">
+              <Suspense fallback={<p>loading...</p>}>
                 <SideMenuBar></SideMenuBar>
+                </Suspense>
               </div>
               <div className="flex-1" id="mainTag">
                 <WebsocketProvider>
-                  <ClientApplication></ClientApplication>
+                  <Suspense fallback={<p>loading...</p>}>
                     {children}
+                  </Suspense>
                 </WebsocketProvider>
                 <Toaster />
               </div>
