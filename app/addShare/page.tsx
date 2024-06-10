@@ -75,6 +75,7 @@ const Page = () => {
     e.preventDefault();
     const finData = {
       ...formData,
+      //@ts-ignore
       userOwner: session?.user?._id
     }
     const data = await getShareRequest(finData);

@@ -21,33 +21,17 @@ const CabShareRequestBox = ({ data }: { data: FormData }) => {
     useEffect(() => {
         let socket = check;
         if (!socket) return;
-    
-        socket.on('requestNotification', (data) => {
-            console.log('Received request notification:', data);
-            console.log(check2)
-            if (data.id == check2) {
-                if (typeof toast === 'function') {
-                    toast({
-                        title: "Scheduled: Catch up",
-                        description: "Friday, February 10, 2023 at 5:57 PM",
-                    });
-                }
-            }
-        });
         return () => {
-            socket.off('requestNotification');
+           
         };
     }, []);
     
     const handleRequest = async () => {
         let socketInstance=check;
-                     // @ts-ignore
-         const res=await sendShareRequest(data.userOwner,data._id,session?.user?._id);
-        //  console.log(res)
-        // const res={ _id: '665f05289056cb13e2b0eac2', socketID: 'T7QFNM6yWSjdIEiyAAAV' }
-
-         
-           check?.emit('notify',res)
+         // @ts-ignore
+         const res=await sendShareRequest(data.userOwner,data._id,session?.user?._id);  
+         console.log(res)       
+        check?.emit('notify',res)
     }
     return (
         <div className='w-full border border-slate-300 p-4 rounded-md bg-gray-50 shadow-md'>

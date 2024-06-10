@@ -83,8 +83,6 @@ export async function findNearbyLocations(formdata: { fromCoords: Coordinates, t
       const endCoords: [number, number] = [location.endLocationCoords.coordinates[0], location.endLocationCoords.coordinates[1]];
       return calculateDistance(endCoords, formdata.toCoords.coordinates) <= 5000;
     });
-
-    console.log("near",nearbyLocations)
     return JSON.parse(JSON.stringify( nearbyLocations));
   } catch (error) {
     console.error('Error finding nearby locations:', error);

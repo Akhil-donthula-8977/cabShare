@@ -25,19 +25,17 @@ app.prepare().then(() => {
       }
         console.log("crt")
       io.to(data.socketID).emit("requestNotification", data);
-    //  recipientSocket.emit("requestNotification", data);
     
     })
     
-
     socket.on("requestAccept",(data)=>{
       console.log("socket check",data)
-      io.to(data.socketId.socketID).emit("requestAccepted",data)
+      io.to(data.socketId).emit("requestAccepted",data)
     })
 
     socket.on('sendMessage', (message) => {
       console.log("polo")
-      io.emit('message', message);
+      io.to(message.receiver).emit('message', message);
 
     });
     socket.on("test", () => {
