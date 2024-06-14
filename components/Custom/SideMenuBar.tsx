@@ -54,16 +54,21 @@ const SideMenuBar = () => {
   return (
     <>
       {((pathname !== '/auth/signup') && (pathname !== '/auth/signin')) && (
-        <section className={`flex flex-col items-center  ${pathname === '/chat' ? 'sm:w-[300px]' : ''}`}>
+        <section className={`flex flex-col items-center shadow-lg   ${pathname === '/chat' ? 'sm:w-[300px]' : ''}`}>
           <Link href="/">
             <Image src={image} height="100" width="100" alt="logo" />
           </Link>
           <div className={`${raleway.className} flex flex-col mt-10 h-lvh mr-4`}>
             {!pathname.includes('/chat') && (
-              <ul className="flex flex-col justify-evenly w-64 p-4 bg-white shadow-lg rounded-lg">
+              <ul className="flex flex-col justify-evenly w-64 p-4 bg-white rounded-lg">
                 {NavLinks.map((e, index) => (
                   <Link href={e.href} key={index}>
-                    <li className="flex items-center ml-1 mt-3 rounded-2xl p-2 gap-3 hover:bg-gray-100 transition-shadow shadow-sm hover:shadow-md cursor-pointer">
+                    <li
+                      className="flex items-center ml-1 mt-3 rounded-2xl p-2 gap-3 transition-shadow cursor-pointer hover:shadow-md"
+                      style={{
+                        boxShadow: `0 2px 4px ${e.color}40`, // Adding alpha (opacity) to the color directly
+                      }}
+                    >
                       <p className="text-2xl" style={{ color: e.color }}>
                         {e.icon}
                       </p>
@@ -75,6 +80,7 @@ const SideMenuBar = () => {
                   Sign Out
                 </Button>
               </ul>
+
             )}
             {pathname.includes('chat') && (
               <div>

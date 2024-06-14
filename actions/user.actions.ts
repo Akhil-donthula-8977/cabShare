@@ -4,7 +4,7 @@ import UserModel from "@/app/models/User"
 import mongoose from "mongoose"
 import { redis } from "@/lib/redis"
 // import ShareTransportRequest from './path/to/ShareTransportRequestModel'; // Adjust the path as per your file structure
-
+import ShareTransportRequest from "@/app/models/ShareTransportRequest"
 import { formToJSON } from "axios"
 import { revalidatePath } from "next/cache";
 export const handleError = (error: unknown) => {
@@ -102,29 +102,37 @@ export const sendShareRequest = async (owner: string, requestId: string, user: s
 
 export const userRequests = async (id: string) => {
     try {
-        await connectDatabase();
-        const data = await UserModel.findById(id).populate({
-            path: 'requestsReceived',
-            populate: [
-                { path: 'userRequested', model: 'User', select: "userName email socketID" },
-            ]
-        }).exec();
-        console.log(data.requestsReceived[0]);
-        return JSON.parse(JSON.stringify(data.requestsReceived))
-
-
+      await connectDatabase(); // Ensure the database connection is established
+      const data = await UserModel.findById(id)
+        .populate({
+          path: 'requestsReceived.userRequested',
+          model: 'User',
+          select: 'userName email socketID',
+        })
+        .populate({
+          path: 'requestsReceived.requestId',
+          model: 'ShareTransportRequest',
+        })
+        .exec();
+      
+      console.log("asdjaisfhiafhodi",data.requestsReceived);
+      return JSON.parse(JSON.stringify(data.requestsReceived));
     } catch (e) {
-        console.error(e);
+      console.error(e);
     }
-}
+  };
 
-export const userRequestAccept = async (userIdToRemove: string, owner: string) => {
+export const userRequestAccept = async (userIdToRemove: string, owner: string,reqid:string) => {
     try {
+        console.log( owner._id )
         const updated = await UserModel.updateOne(
             { _id: owner },
             {
                 $pull: { requestsReceived: { userRequested: userIdToRemove } }, // Remove documents where userRequested matches
-                $addToSet: { connectedUsers: userIdToRemove }, // Add the user ID to connectedUsers
+                $addToSet: {
+                    connectedUsers: userIdToRemove, // Add the user ID to connectedUsers
+                    activeRequests: reqid  // Add the user ID to activeRequests
+                }
             }
         );
         revalidatePath("/");

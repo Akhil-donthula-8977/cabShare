@@ -12,7 +12,7 @@ import { options } from "./api/auth/[...nextauth]/options";
 import { Toaster } from "@/components/ui/toaster"
 import { ToastProvider } from "@/components/ui/toast";
 import ClientApplication from "@/components/providers/ClientApplication";
-
+import {Oval} from "react-loader-spinner"
 const inter = Inter({ subsets: ["latin"] });
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -29,7 +29,7 @@ export default async function RootLayout({
         <ToastProvider>
           <body className={inter.className}>
             <div className="flex gap-2 w-full mt-[0.5px] ">
-              <div className=" hidden sm:block  ">
+              <div className=" sm:block  ">
               <Suspense fallback={<p>loading...</p>}>
                 <SideMenuBar></SideMenuBar>
                 </Suspense>

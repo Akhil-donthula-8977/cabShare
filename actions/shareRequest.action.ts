@@ -3,6 +3,8 @@ import mongoose from "mongoose";
 import { connectDatabase } from "@/lib/db"
 import ShareTransportRequest from "@/app/models/ShareTransportRequest";
 import { Coordinates } from "@/lib/types";
+import { getServerSession } from "next-auth";
+import { options } from "@/app/api/auth/[...nextauth]/options";
 interface IShareTransportRequest {
   name: string;
   numberOfPeople: number;
@@ -65,16 +67,20 @@ export async function findNearbyLocations(formdata: { fromCoords: Coordinates, t
   await connectDatabase();
   try {
       //@ts-ignore
-     
-      const locationsNearStart = await ShareTransportRequest.find({
-        startLocationCoords: {
-          $near: {
-            $geometry: formdata.fromCoords,
-            $maxDistance: 10000 // 5 km in meters
-          }
+     const session=await getServerSession(options);
+     const id=session?.user?._id;
+     //{ "item": { "$not": re.compile("^p.*") } } 
+     const locationsNearStart = await ShareTransportRequest.find({
+      startLocationCoords: {
+        $near: {
+          $geometry: formdata.fromCoords,
+          $maxDistance: 10000 // 10 km in meters
         }
+      },
+      userOwner: {
+        $ne: id
+      }
     });
-
      setInterval(()=>{
         
      },10000)

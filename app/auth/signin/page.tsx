@@ -24,8 +24,6 @@ const Login = () => {
       [name]: type === 'checkbox' ? checked : value,
     }));
   };
-
-
 const handleSubmit = async (e: FormEvent) => {
   e.preventDefault();
   try {
@@ -34,26 +32,20 @@ const handleSubmit = async (e: FormEvent) => {
       ...formData
   }
     const res = await signIn("credentials", data);
-    
     if (!res?.ok) {
       setError("Invalid credentials");
     } else {
       setError("");
-      router.push("/"); // Redirect to desired URL on successful login
+      router.push("/");
     }
-    console.log(res);
+  
   } catch (error) {
     console.error("Error during form submission:", error);
-    // Handle error gracefully, such as displaying an error message to the user
   }
 };
-//  if (status === "unauthenticated"){
-//     router.replace("/auth/signin")
-//   } 
   if(status=="authenticated"){
     router.replace("/")
   }
-
   return (
     <div className={`font-sans ${raleway.className} text-gray-900 antialiased`}>
       <div className="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0 bg-[#f8f4f3]">
@@ -62,7 +54,7 @@ const handleSubmit = async (e: FormEvent) => {
         </div>
 
         <div className="w-full sm:max-w-md mt-6 px-6 py-4 bg-white shadow-md overflow-hidden sm:rounded-lg">
-          <form onSubmit={handleSubmit}  method="post"> {/* Add onSubmit handler to the form */}
+          <form onSubmit={handleSubmit}  method="post"> 
             <div className="py-8">
               <center>
                 <span className="text-2xl font-semibold">Log In</span>
@@ -137,9 +129,7 @@ const handleSubmit = async (e: FormEvent) => {
             </div>
             <h3 className='text-center'>Want to <span><Link href="/auth/signup" className='text-blue-900 underline-offset-2'>Sign up?</Link></span></h3>
           </form>
-
         </div>
-
       </div>
     </div>
   );

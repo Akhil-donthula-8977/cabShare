@@ -2,6 +2,7 @@ import React from 'react';
 import { MdOutlineLocalTaxi } from 'react-icons/md';
 import { IoChatboxOutline } from "react-icons/io5";
 import { IoIosNotificationsOutline } from "react-icons/io";
+import { MdNotificationsActive } from "react-icons/md";
 export interface MyObject {
   href: string;
   icon?: React.ReactNode; // Use React.ReactNode for JSX elements
@@ -32,4 +33,11 @@ export const NavLinks: MyObject[] = [
     icon:<IoIosNotificationsOutline />,
     color:"brown"
   },
+  {
+    href: '/activeRides',
+    key: 'activeRides',
+    text: 'Active cabShares',
+    icon:<MdNotificationsActive />,
+    color:"brown"
+  }
 ];
