@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import React, { useState, useEffect, useContext } from "react";
 import { useSession } from "next-auth/react";
 import { useSearchParams } from "next/navigation";
@@ -6,6 +6,8 @@ import WebSocketContext from "@/components/context/WebsocketContext";
 import { raleway } from "@/lib/fonts";
 import { getAllMessages, sendMessage } from "@/actions/Messages.action";
 import { getuserSocketId } from "@/actions/user.actions";
+import { memo } from "react";
+
 const MessageScreen: React.FC = () => {
   const { data: session } = useSession();
   const [messages, setMessages] = useState<any[]>([]);
@@ -20,12 +22,11 @@ const MessageScreen: React.FC = () => {
     if (!socket) return;
 
     socket.on("message", (data) => {
-      
       setMessages((prevMessages) => [
         ...prevMessages,
         {
           message: data.message,
-          sentTime: new Date(),
+          sentTime: new Date(data.sentTime),
           sender: data.sender,
           direction: data.sender === session?.user?._id ? "outgoing" : "incoming",
           type: "text",
@@ -35,7 +36,7 @@ const MessageScreen: React.FC = () => {
     });
 
     return () => {
-  
+      socket.off("message");
     };
   }, [socket, session?.user?._id]);
 
@@ -50,9 +51,8 @@ const MessageScreen: React.FC = () => {
           try {
             const getMessages = await getAllMessages(receiverId, ownerId);
             setMessages(getMessages || []);
-           
           } catch (error) {
-            console.error( error);
+            console.error(error);
           }
         }
 
@@ -71,7 +71,7 @@ const MessageScreen: React.FC = () => {
     if (input.trim() && socket) {
       const messageData = {
         message: input,
-        sentTime: new Date().getDate(),
+        sentTime: new Date(),
         sender: session?.user?._id!,
         direction: "outgoing",
         type: "text",
@@ -101,7 +101,6 @@ const MessageScreen: React.FC = () => {
             </div>
           </div>
         ))}
-
       </div>
       <div className="p-2 border-t border-gray-300">
         <form onSubmit={handleSendMessage} className="flex items-center">
@@ -115,9 +114,9 @@ const MessageScreen: React.FC = () => {
           />
           <button
             type="submit"
-            className={`ml-2 p-2 ${raleway.className} rounded ${paramsSelect ? 'bg-gray-400 text-gray-700' : 'bg-blue-500 text-white'
-              }`}
-            disabled={paramsSelect}>
+            className={`ml-2 p-2 ${raleway.className} rounded ${paramsSelect ? 'bg-gray-400 text-gray-700' : 'bg-blue-500 text-white'}`}
+            disabled={paramsSelect}
+          >
             Send
           </button>
         </form>
@@ -126,4 +125,4 @@ const MessageScreen: React.FC = () => {
   );
 };
 
-export default MessageScreen;
+export default memo(MessageScreen);

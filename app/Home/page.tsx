@@ -66,7 +66,6 @@ const Home = () => {
 
   useEffect(() => {
     const { instance, id } = socketContext;
-    // console.log(socketContext)
     if (instance && id) {
       instance.on("requestAccepted", (data) => {
         toast({ title: "Your cabshare request has been accepted, have a check" });

@@ -10,14 +10,10 @@ import { Button } from '../ui/button';
 import { signOut } from 'next-auth/react';
 import WebSocketContext from '../context/WebsocketContext';
 import { useToast } from "@/components/ui/use-toast";
-import { createRoot } from 'react-dom/client';
-import { Toast } from './Toast';
 import { useSearchParams } from 'next/navigation';
 import { useSession } from 'next-auth/react';
-import { useMemo } from 'react';
 import { usersConnected } from '@/actions/chats.action';
 import { ScrollArea } from '@radix-ui/react-scroll-area';
-import { Separator } from "@/components/ui/separator";
 import { useRouter } from 'next/navigation';
 const SideMenuBar = () => {
   const socketInstance = useContext(WebSocketContext);
@@ -54,13 +50,13 @@ const SideMenuBar = () => {
   return (
     <>
       {((pathname !== '/auth/signup') && (pathname !== '/auth/signin')) && (
-        <section className={`flex flex-col items-center shadow-lg   ${pathname === '/chat' ? 'sm:w-[300px]' : ''}`}>
+        <section className={`flex flex-col items-center shadow-xl  h-full   ${pathname === '/chat' ? 'sm:w-[300px]' : ''}`}>
           <Link href="/">
             <Image src={image} height="100" width="100" alt="logo" />
           </Link>
           <div className={`${raleway.className} flex flex-col mt-10 h-lvh mr-4`}>
             {!pathname.includes('/chat') && (
-              <ul className="flex flex-col justify-evenly w-64 p-4 bg-white rounded-lg">
+              <ul className="flex flex-col justify-evenly w-64 p-4 bg-white rounded-lg ">
                 {NavLinks.map((e, index) => (
                   <Link href={e.href} key={index}>
                     <li

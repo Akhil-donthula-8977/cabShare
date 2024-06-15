@@ -7,6 +7,8 @@ import { redis } from "@/lib/redis"
 import ShareTransportRequest from "@/app/models/ShareTransportRequest"
 import { formToJSON } from "axios"
 import { revalidatePath } from "next/cache";
+import { getServerSession } from "next-auth"
+import { options } from "@/app/api/auth/[...nextauth]/options"
 export const handleError = (error: unknown) => {
     console.error(error)
     throw new Error(typeof error === 'string' ? error : JSON.stringify(error))
@@ -52,7 +54,7 @@ export const AddUser = async (fromData: {
 export const userSetSocketID = async (socketId: string, userId: string) => {
     try {
         console.log(socketId, userId)
-        const result = await redis.set(userId, socketId,'EX',3600);
+        const result = await redis.set(userId, socketId, 'EX', 3600);
         console.log(result)
         await UserModel.updateOne({ _id: userId }, { socketID: socketId });
         return;
@@ -66,7 +68,7 @@ export const userSetSocketID = async (socketId: string, userId: string) => {
 export const getuserSocketId = async (userId: string) => {
     try {
         let check = null;
-        const key=await redis.get(userId)
+        const key = await redis.get(userId)
         return JSON.parse(JSON.stringify(key));
     }
     catch (e) {
@@ -89,9 +91,9 @@ export const sendShareRequest = async (owner: string, requestId: string, user: s
         const update = await Promise.all(
             [await UserModel.findOneAndUpdate({ _id: owner }, updateOwner, options2),
             await UserModel.updateOne({ _id: user }, updateUser)])
-            const sockid=await getuserSocketId(update[0]._id);
-            console.log("opp sockeyed",sockid)
-        return JSON.parse(JSON.stringify({_id:update[0]._id,socketID:sockid}));
+        const sockid = await getuserSocketId(update[0]._id);
+        console.log("opp sockeyed", sockid)
+        return JSON.parse(JSON.stringify({ _id: update[0]._id, socketID: sockid }));
     }
     catch (e) {
         console.log(e);
@@ -102,36 +104,37 @@ export const sendShareRequest = async (owner: string, requestId: string, user: s
 
 export const userRequests = async (id: string) => {
     try {
-      await connectDatabase(); // Ensure the database connection is established
-      const data = await UserModel.findById(id)
-        .populate({
-          path: 'requestsReceived.userRequested',
-          model: 'User',
-          select: 'userName email socketID',
-        })
-        .populate({
-          path: 'requestsReceived.requestId',
-          model: 'ShareTransportRequest',
-        })
-        .exec();
-      
-      console.log("asdjaisfhiafhodi",data.requestsReceived);
-      return JSON.parse(JSON.stringify(data.requestsReceived));
-    } catch (e) {
-      console.error(e);
-    }
-  };
+        await connectDatabase();
+        const data = await UserModel.findById(id)
+            .populate({
+                path: 'requestsReceived.userRequested',
+                model: 'User',
+                select: 'userName email socketID',
+            })
+            .populate({
+                path: 'requestsReceived.requestId',
+                model: 'ShareTransportRequest',
+            })
+            .exec();
 
-export const userRequestAccept = async (userIdToRemove: string, owner: string,reqid:string) => {
+        console.log("asdjaisfhiafhodi", data.requestsReceived);
+        return JSON.parse(JSON.stringify(data.requestsReceived));
+    } catch (e) {
+        console.error(e);
+    }
+};
+
+export const userRequestAccept = async (userIdToRemove: string, owner: string, reqid: string) => {
     try {
-        console.log( owner._id )
+        await connectDatabase();
+        console.log(owner._id)
         const updated = await UserModel.updateOne(
             { _id: owner },
             {
-                $pull: { requestsReceived: { userRequested: userIdToRemove } }, // Remove documents where userRequested matches
+                $pull: { requestsReceived: { userRequested: userIdToRemove } },
                 $addToSet: {
-                    connectedUsers: userIdToRemove, // Add the user ID to connectedUsers
-                    activeRequests: reqid  // Add the user ID to activeRequests
+                    connectedUsers: userIdToRemove,
+                    activeRequests: reqid
                 }
             }
         );
@@ -142,3 +145,21 @@ export const userRequestAccept = async (userIdToRemove: string, owner: string,re
         // Handle error if needed
     }
 };
+
+export const userActiveCabShares = async () => {
+    try {
+        await connectDatabase();
+        const session=await getServerSession(options);
+        const id="12"
+        const actives = await UserModel.findById(session?.user?._id)
+      .select("activeRequests")
+      .populate({ path: "activeRequests", model: "ShareTransportRequest" });
+      console.log(actives);
+      return JSON.parse(JSON.stringify(actives.activeRequests));
+
+      }
+    catch (e) {
+        throw new Error(e);
+
+    }
+}
