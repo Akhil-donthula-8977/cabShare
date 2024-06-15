@@ -6,9 +6,11 @@ import { FaMale, FaFemale } from 'react-icons/fa';
 import { FaPeopleGroup } from "react-icons/fa6";
 import { Button } from "@/components/ui/button";
 import { raleway } from "@/lib/fonts";
-import { unstable_noStore } from "next/cache";
-const ActiveRequestFetch = async () => {
-    const actives = await userActiveCabShares();
+import { getServerSession } from "next-auth";
+import { options } from "../api/auth/[...nextauth]/options";
+const ActiveRequestFetch = async ({id}:{id:string|null}) => {
+  
+    const actives = await userActiveCabShares(id);
     return (
         <div className={`${raleway.className}`}>
             {actives.length > 0 && actives.map(data => (
@@ -59,11 +61,11 @@ const ActiveRequestFetch = async () => {
 };
 
 const Page =async () => {
-   // unstable_noStore()
+    const session=await getServerSession(options);
     return (
         <div>
             <Suspense fallback={<SkeletonLoad></SkeletonLoad>}>
-                <ActiveRequestFetch />
+                <ActiveRequestFetch id={session?.user?._id} />
             </Suspense>
         </div>
     );

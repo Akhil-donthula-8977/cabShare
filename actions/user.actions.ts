@@ -146,12 +146,11 @@ export const userRequestAccept = async (userIdToRemove: string, owner: string, r
     }
 };
 
-export const userActiveCabShares = async () => {
+export const userActiveCabShares = async (id:string) => {
     try {
         await connectDatabase();
-        const session=await getServerSession(options);
-        const id="12"
-        const actives = await UserModel.findById(session?.user?._id)
+        // if(!id)throw new Error("null error")
+        const actives = await UserModel.findById(id)
       .select("activeRequests")
       .populate({ path: "activeRequests", model: "ShareTransportRequest" });
       console.log(actives);
