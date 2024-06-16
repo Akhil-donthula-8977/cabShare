@@ -1,7 +1,7 @@
 
 import mongoose, { Schema, Document, Types } from 'mongoose';
 
-// Define interface for RequestsReceived sub-document
+import ShareTransportRequest from './ShareTransportRequest';
 interface RequestsReceived {
   userRequested: mongoose.Schema.Types.ObjectId;
   requestId: mongoose.Types.ObjectId;
@@ -55,15 +55,15 @@ const UserSchema: Schema<User> = new Schema<User>({
   connectedUsers: [{ type: Schema.Types.ObjectId, ref: 'User' }],
   requestsReceived: [{
     userRequested: { type: Schema.Types.ObjectId, required: true, ref: "User" },
-    requestId: { type: Schema.Types.ObjectId, required: true, ref: "ShareTransportRequest" },
+    requestId: { type: Schema.Types.ObjectId, required: true, ref:ShareTransportRequest },
     status: {
       type: String,
       enum: ['accepted', 'rejected', 'pending'],
       default: 'pending',
     },
   }],
-  activeRequests: [{ type: Schema.Types.ObjectId, ref: 'ShareTransportRequest' }],
-  requestSent: [{ type: Schema.Types.ObjectId, ref: 'ShareTransportRequest' }],
+  activeRequests: [{ type: Schema.Types.ObjectId, ref:ShareTransportRequest }],
+  requestSent: [{ type: Schema.Types.ObjectId, ref:ShareTransportRequest }],
   socketID: {
     type: String,
     default: "",
@@ -71,8 +71,8 @@ const UserSchema: Schema<User> = new Schema<User>({
   password: {
     type: String,
     required: true,
-    minlength: 4, // Minimum password length
-    maxlength: 100, // Maximum password length
+    minlength: 4,
+    maxlength: 100, 
   },
   premiumUser: {
     type: Boolean,
@@ -80,6 +80,6 @@ const UserSchema: Schema<User> = new Schema<User>({
   },
 });
 
-// Create and export the User model
+
 const UserModel = mongoose.models.User || mongoose.model<User>('User', UserSchema, 'User');
 export default UserModel;

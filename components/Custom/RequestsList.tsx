@@ -11,7 +11,6 @@ const RequestsList = (data: object) => {
   var socketInstance = useContext(WebSocketContext)
   
   const handleAccept = async (userId: string, reqid: string) => {
-    console.log(reqid)
     const socketId = await getuserSocketId(userId);
     const check = await userRequestAccept(userId, session?.user?._id,reqid._id);
     socketInstance?.instance?.emit("requestAccept", { socketId, reqid })

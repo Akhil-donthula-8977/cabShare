@@ -124,27 +124,43 @@ export const userRequests = async (id: string) => {
     }
 };
 
-export const userRequestAccept = async (userIdToRemove: string, owner: string, reqid: string) => {
+
+export const userRequestAccept = async (sender: string, owner: string, reqid: string) => {
     try {
         await connectDatabase();
-        console.log(owner._id)
-        const updated = await UserModel.updateOne(
+
+        const ownerUpdate = await UserModel.updateOne(
             { _id: owner },
             {
-                $pull: { requestsReceived: { userRequested: userIdToRemove } },
+                $pull: { requestsReceived: { userRequested: sender } },
                 $addToSet: {
-                    connectedUsers: userIdToRemove,
+                    connectedUsers: sender,
                     activeRequests: reqid
                 }
             }
         );
+
+        const senderUpdate = await UserModel.updateOne(
+            { _id: sender },
+            {
+                $addToSet: { 
+                    connectedUsers: owner,
+                    activeRequests: reqid
+                 }
+            }
+        );
+
+
+
         revalidatePath("/");
-        return JSON.stringify(updated);
+
+        return JSON.stringify(ownerUpdate );
     } catch (e) {
         console.error("Error:", e);
-        // Handle error if needed
+        throw new Error("Update failed");
     }
 };
+
 
 export const userActiveCabShares = async (id:string) => {
     try {
