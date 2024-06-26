@@ -13,6 +13,7 @@ import { Toaster } from "@/components/ui/toaster"
 import { ToastProvider } from "@/components/ui/toast";
 import ClientApplication from "@/components/providers/ClientApplication";
 import {Oval} from "react-loader-spinner"
+import MenuLoader from "@/components/Custom/menuLoader";
 const inter = Inter({ subsets: ["latin"] });
 export const metadata: Metadata = {
   title: "cabshare",
@@ -28,13 +29,13 @@ export default async function RootLayout({
       <AuthProvider>
         <ToastProvider>
           <body className={inter.className}>
-            <div className="flex gap-2 w-full mt-[0.5px] ">
+            <div className="flex gap-2 w-full mt-[0.5px] bg-[#f7f7f7] ">
               <div className=" sm:block  ">
-              <Suspense fallback={<p>loading...</p>}>
+              <Suspense fallback={<div><MenuLoader></MenuLoader></div>}>
                 <SideMenuBar></SideMenuBar>
                 </Suspense>
               </div>
-              <div className="flex-1" id="mainTag">
+              <div className="flex-1 " id="mainTag" >
                 <WebsocketProvider>
                   <Suspense fallback={<p>loading...</p>}>
                     {children}

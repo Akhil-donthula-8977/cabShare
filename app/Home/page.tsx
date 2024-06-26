@@ -16,7 +16,7 @@ import { raleway } from "@/lib/fonts";
 const ListOfRequests = ({ data }) => {
   return (
     <div>
-      {data?.map((e, index:number) => (
+      {data?.map((e, index: number) => (
         <CabShareRequestBox key={index} data={e} />
       ))}
     </div>
@@ -76,14 +76,14 @@ const Home = () => {
       });
 
       return () => {
-     
+
       };
     }
   }, [socketContext, toast]);
 
   return (
-    <main className={`${raleway.className} mt-2 flex flex-col items-center`}>
-      <div className="flex flex-col sm:flex-row justify-evenly sm:items-center w-full max-w-4xl px-4">
+    <main className={`${raleway.className} mt-2 flex flex-col items-center `}>
+      <div className="flex flex-col md:flex-row justify-evenly sm:items-center  w-full max-w-4xl px-4 ">
         <div className="flex flex-col items-start mb-4 sm:mb-0">
           <label className="text-sm font-medium mb-1">From:</label>
           <LocationSearchBox
@@ -105,7 +105,7 @@ const Home = () => {
           />
         </div>
         <Button
-          className="ml-2 sm:ml-4 h-8 text-xs px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition"
+          className="ml-2 sm:ml-4 h-8 text-xs px-4 py-2 mt-4 bg-blue-500 text-white rounded hover:bg-blue-600 transition"
           onClick={handleSearch}
         >
           Search

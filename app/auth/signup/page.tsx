@@ -35,20 +35,20 @@ const SignUp = () => {
       ...prevFormData,
       [name]: type === 'checkbox' ? checked : value,
     }));
-    console.log(formData)
+   
   };
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     // set loading status
-    console.log(formData)
+
     const data = await AddUser(formData);
     //@ts-ignore
     if (data?.length > 0) {
       setValidationErrors(data);
       return;
     }
-    console.log(data)
+  
     if(data?.message=="user Saved successfully"){
       router.replace("/auth/signin")
     }

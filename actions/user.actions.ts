@@ -143,10 +143,10 @@ export const userRequestAccept = async (sender: string, owner: string, reqid: st
         const senderUpdate = await UserModel.updateOne(
             { _id: sender },
             {
-                $addToSet: { 
+                $addToSet: {
                     connectedUsers: owner,
                     activeRequests: reqid
-                 }
+                }
             }
         );
 
@@ -154,7 +154,7 @@ export const userRequestAccept = async (sender: string, owner: string, reqid: st
 
         revalidatePath("/");
 
-        return JSON.stringify(ownerUpdate );
+        return JSON.stringify(ownerUpdate);
     } catch (e) {
         console.error("Error:", e);
         throw new Error("Update failed");
@@ -162,17 +162,17 @@ export const userRequestAccept = async (sender: string, owner: string, reqid: st
 };
 
 
-export const userActiveCabShares = async (id:string) => {
+export const userActiveCabShares = async (id: string) => {
     try {
         await connectDatabase();
-        // if(!id)throw new Error("null error")
+        //@ts-ignore
         const actives = await UserModel.findById(id)
-      .select("activeRequests")
-      .populate({ path: "activeRequests", model: "ShareTransportRequest" });
-      console.log(actives);
-      return JSON.parse(JSON.stringify(actives.activeRequests));
+            .select("activeRequests")
+            .populate({ path: "activeRequests", model: "ShareTransportRequest" });
+        console.log(actives);
+        return JSON.parse(JSON.stringify(actives.activeRequests));
 
-      }
+    }
     catch (e) {
         throw new Error(e);
 
