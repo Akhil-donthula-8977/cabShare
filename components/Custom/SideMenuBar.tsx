@@ -16,10 +16,9 @@ import { useSession } from "next-auth/react";
 import { usersConnected } from "@/actions/chats.action";
 import { ScrollArea } from "@radix-ui/react-scroll-area";
 import { useRouter } from "next/navigation";
-import MenuLoader from "./menuLoader";
 import { MdOutlineMenuOpen } from "react-icons/md";
 import { IoMdClose } from "react-icons/io";
-
+import MenuLoader from "./MenuLoader";
 const SideMenuBar = () => {
   const socketInstance = useContext(WebSocketContext);
   const pathname = usePathname();

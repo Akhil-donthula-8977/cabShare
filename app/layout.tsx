@@ -13,7 +13,7 @@ import { Toaster } from "@/components/ui/toaster"
 import { ToastProvider } from "@/components/ui/toast";
 import ClientApplication from "@/components/providers/ClientApplication";
 import {Oval} from "react-loader-spinner"
-import MenuLoader from "@/components/Custom/menuLoader";
+import MenuLoader from "@/components/Custom/MenuLoader";
 const inter = Inter({ subsets: ["latin"] });
 export const metadata: Metadata = {
   title: "cabshare",
