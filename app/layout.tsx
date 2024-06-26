@@ -29,7 +29,7 @@ export default async function RootLayout({
       <AuthProvider>
         <ToastProvider>
           <body className={inter.className}>
-            <div className="flex gap-2 w-full mt-[0.5px] bg-[#f7f7f7] ">
+            <div className="flex gap-2 w-full mt-[0.5px]  ">
               <div className=" sm:block  ">
               <Suspense fallback={<div><MenuLoader></MenuLoader></div>}>
                 <SideMenuBar></SideMenuBar>
