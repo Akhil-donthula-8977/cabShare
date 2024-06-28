@@ -114,7 +114,7 @@ const MessageScreen: React.FC = () => {
           />
           <button
             type="submit"
-            className={`ml-2 p-2 ${raleway.className} rounded ${paramsSelect ? 'bg-gray-400 text-gray-700' : 'bg-blue-500 text-white'}`}
+            className={`ml-2 p-2 ${raleway.className} rounded ${paramsSelect ? 'bg-gray-400 text-gray-700' : 'bg-orange-500 text-white'}`}
             disabled={paramsSelect}
           >
             Send

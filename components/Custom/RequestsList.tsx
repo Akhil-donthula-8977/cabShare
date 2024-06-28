@@ -1,6 +1,6 @@
 "use client"
 import React, { useContext } from 'react'
-import { Raleway } from 'next/font/google'
+
 import { raleway } from '@/lib/fonts'
 import { Button } from '../ui/button'
 import WebSocketContext from '../context/WebsocketContext'
@@ -21,8 +21,8 @@ const RequestsList = (data: object) => {
   console.log(data)
   if (data.data.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center h-full">
-        <p className="text-lg text-gray-500">No requests available</p>
+      <div className={`flex flex-col items-center justify-center h-screen  ${raleway.className}`}>
+        <p className="text-2xl text-gray-500">No requests available</p>
       </div>
     );
   }

@@ -58,17 +58,17 @@ const SideMenuBar = () => {
   }
 
   const menuContent = (
-    <div className={`flex flex-col items-center shadow-xl h-full ${pathname === '/chat' ? 'sm:w-[300px]' : ''}`}>
+    <div className={`flex flex-col items-center bg-orange-100 shadow-xl h-full ${pathname === '/chat' ? 'sm:w-[300px]' : ''}`}>
       <Link href="/">
         <Image src={image} height="100" width="100" alt="logo" className="mix-blend-multiply" priority />
       </Link>
       <div className={`${raleway.className} flex flex-col mt-10 h-lvh mr-4`}>
         {!pathname.includes('/chat') && (
-          <ul className="flex flex-col justify-evenly w-64 p-4 rounded-lg">
+          <ul className="flex flex-col justify-evenly w-64 p-4 rounded-lg ">
             {NavLinks.map((e, index) => (
               <Link href={e.href} key={index}>
                 <li
-                  className="flex items-center ml-1 mt-3 rounded-2xl p-2 gap-3 transition-shadow cursor-pointer hover:shadow-md"
+                  className="flex items-center ml-1 mt-3 rounded-2xl p-2 gap-3 transition-shadow cursor-pointer  bg-orange-200 border-orange-500 hover:shadow-md hover:mx-1"
                   style={{
                     boxShadow: `0 2px 4px ${e.color}40`,
                   }}
@@ -80,7 +80,7 @@ const SideMenuBar = () => {
                 </li>
               </Link>
             ))}
-            <Button className="mt-5 p-2 bg-blue-500 text-white rounded-lg shadow hover:shadow-md transition" onClick={() => { signOut({ callbackUrl: '/auth/signin' }) }}>
+            <Button className="mt-5 p-2 bg-orange-600 text-white rounded-lg shadow hover:shadow-md transition" onClick={() => { signOut({ callbackUrl: '/auth/signin' }) }}>
               Sign Out
             </Button>
           </ul>
@@ -93,11 +93,11 @@ const SideMenuBar = () => {
                 {users?.map((user, index) => (
                   <div
                     key={index}
-                    className={`flex items-center p-2 border-b cursor-pointer transition-colors duration-200 ${params.get("id") == user?._id ? "bg-blue-100 text-blue-800" : "hover:bg-gray-100"
+                    className={`flex items-center p-2 border-b cursor-pointer transition-colors duration-200 ${params.get("id") == user?._id ? "bg-orange-100 text-orange-800" : "hover:bg-gray-100"
                       }`}
                     onClick={() => handleClick(user?._id)}
                   >
-                    <div className="flex-shrink-0 h-8 w-8 rounded-full bg-blue-500 flex items-center justify-center text-white font-bold">
+                    <div className="flex-shrink-0 h-8 w-8 rounded-full bg-orange-500 flex items-center justify-center text-white font-bold">
                       {user?.userName?.charAt(0)}
                     </div>
                     <div className="ml-3 text-sm">
@@ -122,7 +122,7 @@ const SideMenuBar = () => {
           </div>
           <div className="sm:hidden">
             <button
-              className="m-4 p-2 bg-blue-500 text-white rounded-lg shadow hover:shadow-md transition"
+              className="m-4 p-2 bg-orange-500 text-white rounded-lg shadow hover:shadow-md transition"
               onClick={() => setDrawerOpen(true)}
             >
               <MdOutlineMenuOpen />
@@ -131,7 +131,7 @@ const SideMenuBar = () => {
               <div className="fixed inset-0 z-50 flex">
                 <div className="relative w-64 bg-white h-full shadow-xl z-50">
                   <button
-                    className="absolute top-4 right-4 p-2 bg-blue-500 text-white rounded-full shadow hover:shadow-md transition"
+                    className="absolute top-4 right-4 p-2 bg-orange-500 text-white rounded-full shadow hover:shadow-md transition"
                     onClick={() => setDrawerOpen(false)}
                   >
                     <IoMdClose />

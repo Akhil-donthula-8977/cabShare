@@ -11,7 +11,7 @@ export const Toast = () => {
     return (
       <div ref={res} className={`w-full h-[50px] flex flex-row items-center justify-center text-center bg-green-600 text-white ${raleway.className}`}>
         Request initiated successfully , wait for people to send you 
-        <Button className="h-[25px] text-center ml-2" onClick={handleRemove}>remove</Button>
+        <Button className="h-[25px] text-center ml-2" onClick={handleRemove}>Ok</Button>
       </div>
     );
   };
