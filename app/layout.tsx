@@ -28,7 +28,7 @@ export default async function RootLayout({
     <html lang="en">
       <AuthProvider>
         <ToastProvider>
-          <body className={inter.className}>
+          <body className={`${inter.className} bg-[#ffffff]`}>
             <div className="flex gap-2 w-full mt-[0.5px]  ">
               <div className=" sm:block  ">
               <Suspense fallback={<div><MenuLoader></MenuLoader></div>}>

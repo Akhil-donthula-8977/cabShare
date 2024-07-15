@@ -14,8 +14,8 @@ export const Modal = ({ isOpen, onClose }:ModalProps) => {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
             </svg>
           </button>
-          <h2 className="text-xl font-semibold mb-4">Modal Title</h2>
-          <p>This is the modal content.</p>
+          <h2 className="text-xl font-semibold mb-4">Your issue has been received</h2>
+          <p>we will reach out you soon!</p>
         </div>
       </div>
     );
