@@ -80,7 +80,7 @@ const SideMenuBar = () => {
                 </li>
               </Link>
             ))}
-            <Button className="mt-5 p-2 bg-orange-600 text-white rounded-lg shadow hover:shadow-md transition" onClick={() => { signOut({ callbackUrl: "https://cabshare-1.onrender.com/auth/signin" }) }}>
+            <Button className="mt-5 p-2 bg-orange-600 text-white rounded-lg shadow hover:shadow-md transition" onClick={() => { signOut() }}>
               Sign Out
             </Button>
           </ul>
